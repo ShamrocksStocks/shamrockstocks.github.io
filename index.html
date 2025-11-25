@@ -28,9 +28,39 @@
 
     <!-- Embed resume PDF as the homepage for now -->
     <main style="margin:0;padding:0;">
-      <iframe src="/MichaelSFlahertyResume.pdf" title="Resume" style="width:100%;height:calc(100vh - 60px);border:none;" sandbox>
-        <p>Your browser does not support PDFs. <a href="/MichaelSFlahertyResume.pdf">Download the resume</a>.</p>
-      </iframe>
+        <div style="padding:12px;background:#f7f7f7;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <strong>Michael S. Flaherty — Resume</strong>
+          </div>
+          <div>
+            <a href="/MichaelSFlahertyResume.pdf" download style="color:#0366d6;text-decoration:none;font-weight:600;">Download Resume (PDF)</a>
+          </div>
+        </div>
+        <div id="pdf-viewer" style="width:100%;height:calc(100vh - 120px);background:#fff;"></div>
+
+        <!-- PDFObject (uses native PDF plugin when available). Fallbacks to Google Docs viewer if embedding fails. -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.7/pdfobject.min.js"></script>
+        <script>
+          (function(){
+            var pdfPath = '/MichaelSFlahertyResume.pdf';
+            var options = { pdfOpenParams: { view: 'FitH' } };
+            var success = false;
+            try {
+              success = PDFObject.embed(pdfPath, '#pdf-viewer', options);
+            } catch(e){ success = false; }
+            if (!success) {
+              // Fallback to Google Docs viewer iframe
+              var iframe = document.createElement('iframe');
+              iframe.src = 'https://docs.google.com/gview?url=' + encodeURIComponent(location.origin + pdfPath) + '&embedded=true';
+              iframe.style.width = '100%';
+              iframe.style.height = '100%';
+              iframe.style.border = 'none';
+              var viewer = document.getElementById('pdf-viewer');
+              viewer.innerHTML = '';
+              viewer.appendChild(iframe);
+            }
+          })();
+        </script>
     </main>
 
     <footer>
