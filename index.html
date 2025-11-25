@@ -38,27 +38,20 @@
         </div>
         <div id="pdf-viewer" style="width:100%;height:calc(100vh - 120px);background:#fff;"></div>
 
-        <!-- PDFObject (uses native PDF plugin when available). Fallbacks to Google Docs viewer if embedding fails. -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.7/pdfobject.min.js"></script>
+        <!-- Full PDF.js viewer (hosted demo) as an iframe to provide the complete PDF.js UI. -->
         <script>
           (function(){
             var pdfPath = '/MichaelSFlahertyResume.pdf';
-            var options = { pdfOpenParams: { view: 'FitH' } };
-            var success = false;
-            try {
-              success = PDFObject.embed(pdfPath, '#pdf-viewer', options);
-            } catch(e){ success = false; }
-            if (!success) {
-              // Fallback to Google Docs viewer iframe
-              var iframe = document.createElement('iframe');
-              iframe.src = 'https://docs.google.com/gview?url=' + encodeURIComponent(location.origin + pdfPath) + '&embedded=true';
-              iframe.style.width = '100%';
-              iframe.style.height = '100%';
-              iframe.style.border = 'none';
-              var viewer = document.getElementById('pdf-viewer');
-              viewer.innerHTML = '';
-              viewer.appendChild(iframe);
-            }
+            // Use the official PDF.js demo viewer hosted by Mozilla. This provides the full viewer UI.
+            var viewerUrl = 'https://mozilla.github.io/pdf.js/web/viewer.html?file=' + encodeURIComponent(location.origin + pdfPath);
+            var iframe = document.createElement('iframe');
+            iframe.src = viewerUrl;
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.style.border = 'none';
+            var viewer = document.getElementById('pdf-viewer');
+            viewer.innerHTML = '';
+            viewer.appendChild(iframe);
           })();
         </script>
     </main>
