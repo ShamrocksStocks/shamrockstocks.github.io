@@ -42,7 +42,8 @@
         <script>
           (function(){
             var pdfPath = '/MichaelSFlahertyResume.pdf';
-            var localViewer = '/pdfjs/web/viewer.html?file=' + encodeURIComponent(location.origin + pdfPath);
+            // Prefer the lightweight local viewer (uses CDN for pdf.js library). If you later add full pdfjs/web viewer, it will also work.
+            var localViewer = '/pdfjs/viewer.html?file=' + encodeURIComponent(location.origin + pdfPath);
             var iframe = document.createElement('iframe');
             iframe.src = localViewer;
             iframe.style.width = '100%';
