@@ -2,3 +2,12 @@ body{font-family:Segoe UI,Arial,sans-serif;max-width:900px;margin:40px auto;padd
 header{margin-bottom:24px}
 nav a{color:#0366d6;text-decoration:none}
 footer{margin-top:36px;color:#666;font-size:90%}
+
+/* Responsive download link handling */
+.download-small{display:none}
+.header-download{display:inline-block}
+
+@media (max-width:600px){
+	.download-small{display:inline-block;background:#0366d6;color:#fff;padding:6px 8px;border-radius:6px;font-size:85%;text-decoration:none}
+	.header-download{display:none}
+}
