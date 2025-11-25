@@ -38,14 +38,13 @@
         </div>
         <div id="pdf-viewer" style="width:100%;height:calc(100vh - 120px);background:#fff;"></div>
 
-        <!-- Full PDF.js viewer (hosted demo) as an iframe to provide the complete PDF.js UI. -->
+        <!-- Self-hosted PDF.js viewer (local). If `pdfjs/` is not installed, follow instructions in `pdfjs/README.md` to download the full distribution. -->
         <script>
           (function(){
             var pdfPath = '/MichaelSFlahertyResume.pdf';
-            // Use the official PDF.js demo viewer hosted by Mozilla. This provides the full viewer UI.
-            var viewerUrl = 'https://mozilla.github.io/pdf.js/web/viewer.html?file=' + encodeURIComponent(location.origin + pdfPath);
+            var localViewer = '/pdfjs/web/viewer.html?file=' + encodeURIComponent(location.origin + pdfPath);
             var iframe = document.createElement('iframe');
-            iframe.src = viewerUrl;
+            iframe.src = localViewer;
             iframe.style.width = '100%';
             iframe.style.height = '100%';
             iframe.style.border = 'none';
@@ -54,6 +53,9 @@
             viewer.appendChild(iframe);
           })();
         </script>
+        <noscript>
+          <p>The PDF viewer requires JavaScript. If the viewer does not appear, please download the PDF: <a href="/MichaelSFlahertyResume.pdf">Download resume</a>.</p>
+        </noscript>
     </main>
 
     <footer>
