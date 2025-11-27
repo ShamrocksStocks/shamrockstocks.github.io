@@ -38,51 +38,79 @@
         </div>
         <div id="pdf-viewer" style="width:100%;height:calc(100vh - 120px);background:#fff;"></div>
 
-        <!-- Image-only fallback: embed the generated image from raw.githubusercontent so external viewers and privacy-blocking browsers always show the resume. -->
+        <!-- Image-only fallback with blur-up placeholders + lazy loading -->
+        <style>
+          .blur-up{filter:blur(12px);transform:scale(1.02);transition:filter .4s ease,transform .4s ease}
+          .blur-up.loaded{filter:none;transform:none}
+          #pdf-viewer img{max-width:100%}
+        </style>
         <script>
           (function(){
             var viewer = document.getElementById('pdf-viewer');
             viewer.innerHTML = '';
             var container = document.createElement('div');
             container.style.width = '100%';
-            container.style.height = '100%';
-            container.style.display = 'flex';
-            container.style.alignItems = 'center';
-            container.style.justifyContent = 'center';
+            container.style.minHeight = '60vh';
             container.style.background = '#fff';
+            container.style.padding = '8px 0';
 
-            // Attempt to load a sequence of generated page images from raw.githubusercontent.
-            // We try page-01..page-20 and append whichever ones load successfully.
             var wrapper = document.createElement('div');
             wrapper.style.textAlign = 'center';
-            var pagesLoaded = 0;
             var maxPages = 20;
-            for (let i = 1; i <= maxPages; i++) {
-              const idx = String(i).padStart(2, '0');
-              const baseUrl = 'https://raw.githubusercontent.com/ShamrocksStocks/shamrockstocks.github.io/main/resume-images/page-' + idx;
-              // build variant urls
-              const v480 = baseUrl + '-480.webp';
-              const v800 = baseUrl + '-800.webp';
-              const v1200 = baseUrl + '-1200.webp';
-              const vFallback = baseUrl + '.webp';
+
+            // IntersectionObserver to lazy-load full srcset when off-screen images come into view
+            var io = new IntersectionObserver(function(entries){
+              entries.forEach(function(entry){
+                if (!entry.isIntersecting) return;
+                var img = entry.target;
+                if (img.dataset && img.dataset.srcset){
+                  img.srcset = img.dataset.srcset;
+                  img.sizes = img.dataset.sizes || '(max-width: 800px) 100vw, 800px';
+                  img.src = img.dataset.src || img.src;
+                  // ensure we remove placeholder visual after full image loads
+                  img.addEventListener('load', function onLoad(){ img.classList.add('loaded'); img.removeEventListener('load', onLoad); });
+                  delete img.dataset.srcset;
+                  io.unobserve(img);
+                }
+              });
+            }, {root:null,rootMargin:'200px'});
+
+            for (let i=1;i<=maxPages;i++){
+              const idx = String(i).padStart(2,'0');
+              const base = 'https://raw.githubusercontent.com/ShamrocksStocks/shamrockstocks.github.io/main/resume-images/page-' + idx;
+              const v480 = base + '-480.webp';
+              const v800 = base + '-800.webp';
+              const v1200 = base + '-1200.webp';
+              const vFallback = base + '.webp';
+              const placeholder = base + '-40.webp';
 
               const img = document.createElement('img');
               img.alt = 'Resume page ' + i;
-              img.style.maxWidth = '100%';
               img.style.display = 'block';
               img.style.margin = '12px auto';
-              img.loading = 'lazy';
-              // Use srcset so the browser can choose the best size
-              img.srcset = v480 + ' 480w, ' + v800 + ' 800w, ' + v1200 + ' 1200w, ' + vFallback + ' 1600w';
-              img.sizes = '(max-width: 800px) 100vw, 800px';
-              // Start with the smallest as the src for fast load
-              img.src = v480;
-              img.onload = function(){ wrapper.appendChild(img); };
-              img.onerror = function(){
-                // If variants missing, try fallback webp then ignore
-                img.onerror = null;
-                img.src = vFallback;
-              };
+              img.className = 'blur-up';
+
+              // First page: eager load the full srcset (but still show blur-up placeholder until loaded)
+              if (i === 1) {
+                img.loading = 'eager';
+                img.src = placeholder; // show placeholder while full image loads
+                const fullSrcset = v480 + ' 480w, ' + v800 + ' 800w, ' + v1200 + ' 1200w, ' + vFallback + ' 1600w';
+                // load small full image first for reliable load event
+                const tmp = new Image();
+                tmp.src = v480;
+                tmp.onload = function(){ img.srcset = fullSrcset; img.sizes = '(max-width: 800px) 100vw, 800px'; img.src = v480; };
+                img.addEventListener('load', function onLoad(){ img.classList.add('loaded'); img.removeEventListener('load', onLoad); });
+                wrapper.appendChild(img);
+              } else {
+                // Others: lazy load via IntersectionObserver. Use placeholder as src, store full srcset in data attribute.
+                img.loading = 'lazy';
+                img.src = placeholder;
+                img.dataset.srcset = v480 + ' 480w, ' + v800 + ' 800w, ' + v1200 + ' 1200w, ' + vFallback + ' 1600w';
+                img.dataset.sizes = '(max-width: 800px) 100vw, 800px';
+                img.dataset.src = v480;
+                wrapper.appendChild(img);
+                io.observe(img);
+              }
             }
 
             // Caption + download button under images
