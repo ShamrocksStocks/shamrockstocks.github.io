@@ -58,21 +58,30 @@
             var pagesLoaded = 0;
             var maxPages = 20;
             for (let i = 1; i <= maxPages; i++) {
-              const name = 'page-' + String(i).padStart(2, '0') + '.webp';
-              const url = 'https://raw.githubusercontent.com/ShamrocksStocks/shamrockstocks.github.io/main/resume-images/' + name;
-              const img = new Image();
+              const idx = String(i).padStart(2, '0');
+              const baseUrl = 'https://raw.githubusercontent.com/ShamrocksStocks/shamrockstocks.github.io/main/resume-images/page-' + idx;
+              // build variant urls
+              const v480 = baseUrl + '-480.webp';
+              const v800 = baseUrl + '-800.webp';
+              const v1200 = baseUrl + '-1200.webp';
+              const vFallback = baseUrl + '.webp';
+
+              const img = document.createElement('img');
               img.alt = 'Resume page ' + i;
               img.style.maxWidth = '100%';
               img.style.display = 'block';
               img.style.margin = '12px auto';
-              img.onload = function(){
-                pagesLoaded += 1;
-                wrapper.appendChild(img);
-              };
+              // Use srcset so the browser can choose the best size
+              img.srcset = v480 + ' 480w, ' + v800 + ' 800w, ' + v1200 + ' 1200w, ' + vFallback + ' 1600w';
+              img.sizes = '(max-width: 800px) 100vw, 800px';
+              // Start with the smallest as the src for fast load
+              img.src = v480;
+              img.onload = function(){ wrapper.appendChild(img); };
               img.onerror = function(){
-                // missing page — ignore
+                // If variants missing, try fallback webp then ignore
+                img.onerror = null;
+                img.src = vFallback;
               };
-              img.src = url;
             }
 
             // Caption + download button under images
