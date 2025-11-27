@@ -38,40 +38,37 @@
         </div>
         <div id="pdf-viewer" style="width:100%;height:calc(100vh - 120px);background:#fff;"></div>
 
-        <!-- Self-hosted PDF.js viewer (local). If `pdfjs/` is not available, show image fallback from raw GitHub as a static viewer. -->
+        <!-- Image-only fallback: embed the generated image from raw.githubusercontent so external viewers and privacy-blocking browsers always show the resume. -->
         <script>
-          (async function(){
-            var pdfPath = '/MichaelSFlahertyResume.pdf';
+          (function(){
             var viewer = document.getElementById('pdf-viewer');
             viewer.innerHTML = '';
-            try{
-              // Test whether the local viewer exists on Pages
-              var head = await fetch('/pdfjs/viewer.html', {method: 'HEAD'});
-              if (head && head.ok) {
-                var localViewer = '/pdfjs/viewer.html?file=' + encodeURIComponent(location.origin + pdfPath);
-                var iframe = document.createElement('iframe');
-                iframe.src = localViewer;
-                iframe.style.width = '100%';
-                iframe.style.height = '100%';
-                iframe.style.border = 'none';
-                viewer.appendChild(iframe);
-                return;
-              }
-            }catch(e){
-              // Network or fetch failed — fall through to image fallback
-              console.warn('Local viewer check failed:', e);
-            }
+            var container = document.createElement('div');
+            container.style.width = '100%';
+            container.style.height = '100%';
+            container.style.display = 'flex';
+            container.style.alignItems = 'center';
+            container.style.justifyContent = 'center';
+            container.style.background = '#fff';
 
-            // Fallback: show the generated image(s) from the repository raw URL
-            // Raw URLs are served by raw.githubusercontent.com and can be embedded as images.
             var img = document.createElement('img');
             img.alt = 'Resume page (image fallback)';
-            img.style.width = '100%';
-            img.style.height = '100%';
+            img.style.maxWidth = '100%';
+            img.style.maxHeight = '100%';
             img.style.objectFit = 'contain';
-            // Use raw.githubusercontent URL so the image loads even if Pages isn't serving the file yet
             img.src = 'https://raw.githubusercontent.com/ShamrocksStocks/shamrockstocks.github.io/main/resume-images/page-01.png';
-            viewer.appendChild(img);
+
+            // Add a small caption with a Download link under the image for convenience
+            var wrapper = document.createElement('div');
+            wrapper.style.textAlign = 'center';
+            wrapper.appendChild(img);
+            var caption = document.createElement('div');
+            caption.style.marginTop = '10px';
+            caption.innerHTML = '<a href="/MichaelSFlahertyResume.pdf" style="display:inline-block;padding:6px 10px;background:#0366d6;color:#fff;border-radius:6px;text-decoration:none">Download PDF</a>';
+            wrapper.appendChild(caption);
+
+            container.appendChild(wrapper);
+            viewer.appendChild(container);
           })();
         </script>
         <noscript>
