@@ -71,6 +71,7 @@
               img.style.maxWidth = '100%';
               img.style.display = 'block';
               img.style.margin = '12px auto';
+              img.loading = 'lazy';
               // Use srcset so the browser can choose the best size
               img.srcset = v480 + ' 480w, ' + v800 + ' 800w, ' + v1200 + ' 1200w, ' + vFallback + ' 1600w';
               img.sizes = '(max-width: 800px) 100vw, 800px';
