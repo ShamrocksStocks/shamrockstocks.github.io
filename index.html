@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>tradehax.net — ShamrockStocks</title>
+    <!-- DNS prefetch for visitor counter service -->
+    <link rel="dns-prefetch" href="https://hits.dwyl.com">
   </head>
   <body>
     <header style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
@@ -130,6 +132,10 @@
 
     <footer>
       <p>&copy; ShamrockStocks</p>
+      <!-- Small visitor counter badge (lazy loaded, non-critical) -->
+      <div id="visitor-counter" style="text-align:center;margin-top:8px;font-size:12px;color:#666;">
+        <img src="https://hits.dwyl.com/ShamrocksStocks/shamrockstockspage.svg?style=flat-square" alt="Visitor count" loading="lazy" style="height:20px;vertical-align:middle;">
+      </div>
     </footer>
     <link rel="stylesheet" href="/assets/style.css">
 
@@ -147,26 +153,19 @@
     -->
 
     <script>
-      // Track resume downloads and other interactions.
-      function trackDownload() {
-        try {
-          // If GA is configured with gtag, send an event
-          if (typeof gtag === 'function') {
+      // Track resume downloads using event delegation (more efficient than multiple listeners)
+      document.body.addEventListener('click', function(e) {
+        var target = e.target.closest('a[href$="MichaelSFlahertyResume.pdf"]');
+        if (target && typeof gtag === 'function') {
+          try {
             gtag('event', 'download_resume', {
               'event_category': 'engagement',
               'event_label': 'MichaelSFlahertyResume.pdf'
             });
+          } catch (err) {
+            // Silent fail for analytics
           }
-        } catch (e) {
-          console.log('analytics track error', e);
         }
-      }
-      // Attach click handlers for elements that may be added dynamically
-      document.addEventListener('DOMContentLoaded', function(){
-        var els = document.querySelectorAll('a[href$="MichaelSFlahertyResume.pdf"]');
-        els.forEach(function(el){
-          el.addEventListener('click', trackDownload);
-        });
       });
     </script>
 
